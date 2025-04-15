@@ -1,0 +1,2097 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "NMDS Api",
+    "version": "1.0.0",
+    "description": "API for mwp_admin authentication, product management including product creation."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development server"
+    },
+    {
+      "url": "http://10.24.89.9:5003",
+      "description": "Mospi Development Server"
+    }
+  ],
+  "paths": {
+    "/api/signin": {
+  "post": {
+    "summary": "Sign in mwp_admin",
+    "tags": ["Signin"],
+    "parameters": [
+      {
+        "in": "header",
+        "name": "X-From-Swagger",
+        "description": "Indicates that the request originates from Swagger or Postman for testing purposes.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "default": "true"
+        }
+      }
+    ],
+    "description": "Authenticate a mwp_admin by validating username and password and return an access token.",
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "example": "mwp_admin"
+              },
+              "password": {
+                "type": "string",
+                "example": "mwpUSER123"
+              }
+            },
+            "required": ["username", "password"]
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "User successfully authenticated",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "mwp"
+                    },
+                    "usertype": {
+                      "type": "string",
+                      "example": "mwp_admin"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5..."
+                    }
+                  }
+                },
+                "msg": {
+                  "type": "string",
+                  "example": "UserVerified"
+                },
+                "statusCode": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Unauthorized access due to invalid credentials or account status.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "New user detected. Please reset your password."
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Internal server error: Database connection failed."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+"/api/mwp/user": {
+    "post": {
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "summary": "Create a user",
+      "tags": ["User Management"],
+      "description": "Create a user",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "agency_id": { "type": "string", "example": "1" },
+                "username": { "type": "string", "example": "(Agency name)_user" },
+                "name": { "type": "string", "example": "Your Name" },
+                "password": { "type": "string", "example": "(AGENCY_NAME)USER123" },
+                "usertype": { "type": "string", "example": "NODAL User" },
+                "email": { "type": "string", "example": "xyz@gmail.com" },
+                "phone": { "type": "string", "example": "1234567890" },
+                "address": { "type": "string", "example": "abcd 14/6, Gzb, U.P." }
+              },
+              "required": ["username", "password"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "User created successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "username": { "type": "string", "example": "mwp" },
+                      "title": { "type": "string", "example": "mwp" },
+                      "name": { "type": "string", "example": "mwp" },
+                      "email": { "type": "string", "example": "xyz@gmail.com" },
+                      "phone": { "type": "string", "example": "mwp" },
+                      "address": { "type": "string", "example": "abcd 14/6" }
+                    }
+                  },
+                  "msg": { "type": "string", "example": "User created successfully" },
+                  "statusCode": { "type": "boolean", "example": true }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Unable to create user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": { "type": "string", "example": "Unable to create user" }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Internal server error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": { "type": "string", "example": "Error in creating user" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "get": {
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "summary": "Get all users",
+      "tags": ["User Management"],
+      "description": "Fetch all users",
+      "responses": {
+        "200": {
+          "description": "Users fetched successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "username": { "type": "string", "example": "mwp" },
+                        "title": { "type": "string", "example": "mwp" },
+                        "name": { "type": "string", "example": "mwp" },
+                        "email": { "type": "string", "example": "xyz@gmail.com" },
+                        "phone": { "type": "string", "example": "mwp" },
+                        "address": { "type": "string", "example": "abcd 14/6" }
+                      }
+                    }
+                  },
+                  "msg": { "type": "string", "example": "Users fetched successfully" },
+                  "statusCode": { "type": "boolean", "example": true }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "No users found",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": { "type": "string", "example": "No users found" }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Internal server error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": { "type": "string", "example": "Error in fetching users" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+"/api/mwp/user/{username}": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["User Management"],
+        "summary": "Get a user by username",
+        "description": "Retrieves the details of a user by username. Only users with the title 'mwp_admin' can access this endpoint.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "description": "Username of the user to fetch",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "username": { "type": "string", "example": "mwp" },
+                        "title": { "type": "string", "example": "mwp" },
+                        "name": { "type": "string", "example": "mwp" },
+                        "email": { "type": "string", "example": "xyz@gmail.com" },
+                        "phone": { "type": "string", "example": "mwp" },
+                        "address": { "type": "string", "example": "abcd 14/6" }
+                      }
+                    },
+                    "msg": { "type": "string", "example": "User fetched successfully" },
+                    "statusCode": { "type": "boolean", "example": true }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "User does not exist" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Error fetching user" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["User Management"],
+        "summary": "Delete a user by username",
+        "description": "Deletes a user by username. Only users with the title 'mwp_admin' can delete users, except 'mwp_admin' itself.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "description": "Username of the user to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "msg": { "type": "string", "example": "User deleted successfully" },
+                    "statusCode": { "type": "boolean", "example": true }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "User not found" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Error deleting user" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["User Management"],
+        "summary": "Update a user by username",
+        "description": "Updates a user's details. Only users with the title 'mwp_admin' can update other users.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "description": "Username of the user to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string", "example": "mwp" },
+                  "name": { "type": "string", "example": "mwp" },
+                  "email": { "type": "string", "example": "xyz@gmail.com" },
+                  "phone": { "type": "string", "example": "1234567890" },
+                  "address": { "type": "string", "example": "abcd 14/6" },
+                  "password": { "type": "string", "example": "password" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "username": { "type": "string", "example": "mwp" },
+                        "title": { "type": "string", "example": "mwp" },
+                        "name": { "type": "string", "example": "mwp" },
+                        "email": { "type": "string", "example": "xyz@gmail.com" },
+                        "phone": { "type": "string", "example": "1234567890" },
+                        "address": { "type": "string", "example": "abcd 14/6" }
+                      }
+                    },
+                    "msg": { "type": "string", "example": "User updated successfully" },
+                    "statusCode": { "type": "boolean", "example": true }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "User not found" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Error updating user" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    
+    "/api/mwp/product": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create product",
+        "description": "Create a new product in the system. Only developers can create products.",
+        "tags": ["Products"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "agency_name": {
+                    "type": "string"
+                  },
+                  "count": {
+                    "type": "string"
+                  },
+                  "icon": {
+                    "type": "string"
+                  },
+                  "product": {
+                    "type": "string"
+                  },
+                  "period": {
+                    "type": "string"
+                  },
+                  "tooltip": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+              
+                  },
+                  "table": {
+                    "type": "string"
+                
+                  },
+                  "swagger": {
+                    "type": "boolean"
+            
+                  },
+                  "viz": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "title", "agency_name", "count", "type"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sample Response ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "cpi"
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Consumer Price Index"
+                        },
+                        "agency_name": {
+                          "type": "string",
+                          "example": "Economy"
+                        },
+                        "count": {
+                          "type": "string",
+                          "example": "5.08%"
+                        },
+                        "icon": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "product": {
+                          "type": "string",
+                          "example": "CPI"
+                        },
+                        "period": {
+                          "type": "string",
+                          "example": "May 2024"
+                        },
+                        "tooltip": {
+                          "type": "string",
+                          "example": "Click to View CPI Datasets"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "Inflation"
+                        },
+                        "url": {
+                          "type": "string",
+                          "example": "macroindicators?product=cpi"
+                        },
+                        "table": {
+                          "type": "string",
+                          "example": "https://esankhyiki.mospi.gov.in/dashboard/cpi"
+                        },
+                        "swagger": {
+                          "type": "string",
+                          "example": "Y"
+                        },
+                        "viz": {
+                          "type": "string",
+                          "example": "https://esankhyiki.mospi.gov.in/viz/cpi"
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Product created successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Unauthorized user (only mwp can create the product)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Only mwp can create the product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error in Creating product: [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get All Products",
+        "description": "Retrieve all products. Only mwp or domain users can access.",
+        "tags": ["Products"],
+        "responses": {
+          "200": {
+            "description": "Product data retrieved",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "array", "items": { "type": "object" } },
+                "msg": { "type": "string" },
+                "statusCode": { "type": "boolean" }
+              }
+            }
+          },
+          "405": {
+            "description": "Only mwp or domain users can access the product data"
+          },
+          "500": {
+            "description": "Unable to fetch product data"
+          }
+        }
+      }
+    },
+    "/api/mwp/product/{productId}": {
+      "get": {
+        "summary": "Get Product by ID",
+        "description": "Retrieve a product by its ID",
+        "tags": ["Products"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "description": "Product ID",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product data retrieved",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "object" },
+                "msg": { "type": "string" },
+                "statusCode": { "type": "boolean" }
+              }
+            }
+          },
+          "400": {
+            "description": "Product ID is required"
+          },
+          "405": {
+            "description": "Only mwp or domain users can access the product data"
+          },
+          "500": {
+            "description": "Unable to fetch product data"
+          }
+        }
+      }
+    },
+    "/api/mwp/product/{id}": {
+      "put": {
+        "summary": "Update product",
+        "tags": ["Products"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Update an existing product. Only mwp and domain users can edit products.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "cpi"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Consumer Price Index"
+                  },
+                  "count": {
+                    "type": "string",
+                    "example": "5.08%"
+                  },
+                  "icon": {
+                    "type": "string",
+                    "example": ""
+                  },
+                  "period": {
+                    "type": "string",
+                    "example": "May 2024"
+                  },
+                  "tooltip": {
+                    "type": "string",
+                    "example": "Click to View CPI Datasets"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "Inflation"
+                  },
+                  "url": {
+                    "type": "string",
+                    "example": "macroindicators?product=cpi"
+                  },
+                  "table": {
+                    "type": "string",
+                    "example": "https://esankhyiki.mospi.gov.in/dashboard/cpi"
+                  },
+                  "swagger": {
+                    "type": "string",
+                    "example": "Y"
+                  },
+                  "viz": {
+                    "type": "string",
+                    "example": "https://esankhyiki.mospi.gov.in/viz/cpi"
+                  },
+                  "agency_name": {
+                    "type": "string",
+                    "example": "Economy"
+                  }
+                },
+                "required": ["title", "count", "type", "agency_name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "example": "Consumer Price Index"
+                        },
+                        "count": {
+                          "type": "string",
+                          "example": "5.08%"
+                        },
+                        "icon": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "period": {
+                          "type": "string",
+                          "example": "May 2024"
+                        },
+                        "tooltip": {
+                          "type": "string",
+                          "example": "Click to View CPI Datasets"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "Inflation"
+                        },
+                        "url": {
+                          "type": "string",
+                          "example": "macroindicators?product=cpi"
+                        },
+                        "table": {
+                          "type": "string",
+                          "example": "https://esankhyiki.mospi.gov.in/dashboard/cpi"
+                        },
+                        "swagger": {
+                          "type": "string",
+                          "example": "Y"
+                        },
+                        "viz": {
+                          "type": "string",
+                          "example": "https://esankhyiki.mospi.gov.in/viz/cpi"
+                        },
+                        "agency_name": {
+                          "type": "string",
+                          "example": "Economy"
+                        }
+                      }
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Product updated successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Unauthorized user (only mwp and domain users can edit the product)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Only mwp and domain users can edit"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error in Updating product: [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete product",
+        "tags": ["Products"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Delete an existing product. Only mwp_admin can delete products.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "prod_001"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {}
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Product deleted successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Unauthorized user (only mwp can delete the product)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Only mwp can delete the product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable or internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unable to delete the product: [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mwp/agency": {
+      "post": {
+        "summary": "Create agency",
+        "tags": ["Agencies"],
+        "description": "Create a new agency in the system. Only mwp_admin can create agencys.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "agency_name": {
+                    "type": "string",
+                    "example": "NSS"
+                  }
+                },
+                "required": ["agency_name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "agency created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "agency_name": "NSS",
+                        "name": "NSS"
+                      }
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "agency created successfully"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request due to missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized request"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only mwp_admin can create agencys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Only mwp can create the agency"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error in Creating agency: [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mwp/agency ": {
+      "get": {
+        "summary": "Get All agencys",
+        "description": "Retrieve all agencies. Only mwp, developers, or domain users can access.",
+        "tags": ["Agencies"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "agency data retrieved",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": { "type": "array", "items": { "type": "object" } },
+                "msg": { "type": "string" },
+                "statusCode": { "type": "boolean" }
+              }
+            }
+          },
+          "403": {
+            "description": "Only developers or domain users can access the agencys"
+          },
+          "500": {
+            "description": "Unable to fetch agency data"
+          }
+        }
+      }
+    },
+    "/api/mwp/agency/{agency_name}": {
+      "get": {
+        "summary": "Get agency by agency_name",
+        "tags": ["Agencies"],
+        "description": "Retrieve a agency by its agency_name",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agency_name",
+            "in": "path",
+            "required": true,
+            "description": "agency_name of the agency",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "agency data retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "agency_name": "NSS",
+                        "name": "NSS"
+                      }
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "agency data retrieved"
+                    },
+                    "statusCode": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "agency_name is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "agency_name is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only authorized users can access this endpoint"
+          },
+          "500": {
+            "description": "Unable to fetch agency data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unable to fetch data from agency Table"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+        "put": {
+          "summary": "Update agency",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "tags": ["Agencies"],
+          "description": "Update an existing agency. Only mwp_admin and users with role ID 1 or 2 can edit agencies.",
+          "parameters": [
+            {
+              "name": "agency_name",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "example": "Old Agency Name"
+              },
+              "description": "The current name of the agency to update."
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "agency_name": {
+                      "type": "string",
+                      "example": "New Agency Name",
+                      "description": "The new name for the agency."
+                    }
+                  },
+                  "required": ["agency_name"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Agency updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "agency_name": {
+                            "type": "string",
+                            "example": "New Agency Name"
+                          }
+                        }
+                      },
+                      "msg": {
+                        "type": "string",
+                        "example": "Agency updated successfully"
+                      },
+                      "statusCode": {
+                        "type": "boolean",
+                        "example": true
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "405": {
+              "description": "Invalid input or unauthorized user",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "agency_name is required or unauthorized access"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "Error in updating agency data: [error details]"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+      
+      "delete": {
+      "summary": "Delete agency by agency_name",
+      "tags": ["Agencies"],
+      "description": "Delete a agency by its agency_name. Only mwp_admin can delete agencys.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "agency_name",
+          "in": "path",
+          "required": true,
+          "description": "agency_name of the agency to be deleted",
+          "schema": {
+            "type": "string",
+            "example": "agency_name_001"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "agency and associated data deleted successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "msg": {
+                    "type": "string",
+                    "example": "agency and associated data successfully deleted"
+                  },
+                  "statusCode": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Unauthorized user (only mwp can delete agencys)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Only mwp can delete the agency"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid agency_name or missing parameter",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "agency_name is invalid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Error in deleting agency",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Unable to delete the agency: [error details]"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  
+    },
+"/api/mwp/metadata/{Product}": {
+
+    "put": {
+      "summary": "Update Metadata",
+      "description": "Update metadata for a product. Only mwp_admin or the owner of the product can update metadata.",
+      "tags": ["Metadata"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "Product",
+          "description": "The product for which metadata needs to be updated.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Product": {
+                  "type": "string",
+                  "description": "The product name associated with the metadata ."
+                },
+                "data": {
+                  "type": "json",
+                  "description": "Metadata"
+                }
+              },
+              "example": {
+                "Product_id":"",
+                "Product_name": "",
+                "agency_id": "",
+                "data" :""
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Metadata updated successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "description": "The updated metadata object."
+                  },
+                  "msg": {
+                    "type": "string",
+                    "description": "A message indicating the success of the operation."
+                  },
+                  "statusCode": {
+                    "type": "boolean",
+                    "description": "Indicates the status of the operation (true for success)."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Invalid user. Only mwp or authorized users can update metadata.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Invalid user. Only mwp or authorized users can update metadata."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Error in updating metadata",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Error updating metadata: [error details]"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ,
+  
+  "get": {
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "summary": "Get Metadata by Product name",
+    "description": "Retrieve metadata by product name",
+    "tags": ["Metadata"],
+    "parameters": [
+      {
+        "name": "Product",
+        "in": "path",
+        "description": "Product name",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Product metadata retrieved",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "The metadata for the specified product."
+                },
+                "msg": {
+                  "type": "string",
+                  "description": "A message indicating the success of the operation."
+                },
+                "statusCode": {
+                  "type": "boolean",
+                  "description": "Indicates the status of the operation (true for success)."
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Product ID is required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Product ID is required."
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Error in fetching metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Error fetching metadata: [error details]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "delete": {
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "summary": "Delete Metadata",
+    "description": "Delete metadata for a specific product. Only mwp or the product owner can delete metadata.",
+    "tags": ["Metadata"],
+    "parameters": [
+      {
+        "name": "Product",
+        "in": "path",
+        "description": "The product name for which metadata needs to be deleted.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "ABC"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Metadata deleted successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {}
+                },
+                "msg": {
+                  "type": "string",
+                  "example": "Metadata deleted successfully"
+                },
+                "statusCode": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Unauthorized user (only mwp or product owner can delete metadata)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Only mwp or product owner can delete the metadata"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Error in deleting metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Error deleting metadata: [error details]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+"/api/mwp/metadata/version": {
+  "get": {
+    "summary": "Get Metadata by Product and Version",
+     "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+    "tags": ["Metadata"],
+    "parameters": [
+      {
+        "name": "product",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "The product name"
+      },
+      {
+        "name": "version",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "The version of the product"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response with metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object"
+                },
+                "msg": {
+                  "type": "string"
+                },
+                "statusCode": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request - Product is required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                },
+                "statusCode": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error - Unable to fetch data",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+,
+"/api/mwp/metadata": {
+  "post": {
+     "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+    "summary": "Create Metadata",
+    "description": "Create metadata for a product. Only mwp_admin can create metadata.",
+    "tags": ["Metadata"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "Product": {
+                "type": "string",
+                "description": "The identifier of the product for which metadata is being created."
+              },
+              "data": {
+                "type": "object",
+                "description": "The metadata details as a JSON object."
+              }
+            },
+            "example": {
+              "agency-id": "",
+              "product_id": "",
+              "product_name": "",
+              "data": ""
+
+            },
+            "required": ["Product"]
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Sample Response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "The created metadata object."
+                },
+                "msg": {
+                  "type": "string",
+                  "description": "A message indicating the success of the operation."
+                },
+                "statusCode": {
+                  "type": "boolean",
+                  "description": "Indicates the status of the operation (true for success)."
+                }
+              }
+            }
+          }
+        }
+      },
+      "405": {
+        "description": "Only mwp_admin can create metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Only mwp_admin can create metadata."
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Error in creating metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Error creating metadata: [error details]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "get": {
+
+    "summary": "Get All Metadata",
+    "description": "Fetch all metadata for products.",
+    "tags": ["Metadata"],
+    "responses": {
+      "200": {
+        "description": "Successfully retrieved all metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "An array of metadata objects."
+                  }
+                },
+                "msg": {
+                  "type": "string",
+                  "description": "A message indicating the success of the operation."
+                },
+                "statusCode": {
+                  "type": "boolean",
+                  "description": "Indicates the status of the operation (true for success)."
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Error in retrieving metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Error retrieving metadata: [error details]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+    
+  
+  
+},
+"/api/user/changepassword": {
+  "put": {
+    "tags": ["User Management"],
+    "summary": "Change user password",
+    "description": "Allows users to change their password by providing the current password for validation. Updates the `password` field and sets the `newuser` flag to `false`.",
+    "security": [
+      {
+        "BearerAuth": []
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "description": "The user's username.",
+                "example": "NSS_user"
+              },
+              "password": {
+                "type": "string",
+                "description": "The new password to set.",
+                "example": "newSecurePassword456"
+              }
+            },
+            "required": ["currentPassword", "password"]
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Password updated successfully.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Password updated successfully."
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "user_id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "john_doe"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad request due to missing or invalid parameters.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Both currentPassword and password are required."
+                }
+              }
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Unauthorized request due to incorrect current password.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Current password is incorrect."
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "User with the provided current password not found.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "User with the provided current password not found."
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error during password change.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Server error during password change."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+},
+"components": {
+"securitySchemes": {
+  "BearerAuth": {
+    "type": "http",
+    "scheme": "bearer",
+    "bearerFormat": "JWT"
+  }
+}
+}
+}
